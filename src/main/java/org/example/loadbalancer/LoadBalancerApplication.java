@@ -3,17 +3,23 @@ package org.example.loadbalancer;
 import org.example.loadbalancer.model.HealthStatus;
 import org.example.loadbalancer.model.Server;
 import org.example.loadbalancer.repository.ServerRespository;
+import org.example.loadbalancer.service.LoadBalancerService;
+import org.example.loadbalancer.service.RoundRobinService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+import java.util.List;
+
 @SpringBootApplication
 @EnableJpaAuditing
 
 public class LoadBalancerApplication implements CommandLineRunner {
 
+    @Autowired
+    private RoundRobinService roundRobinService;
     @Autowired
     private ServerRespository serverRespository;
 
@@ -32,5 +38,8 @@ public class LoadBalancerApplication implements CommandLineRunner {
 
         String server_3_Url = "http://localhost:8083";
         serverRespository.save(new Server("Server_2", HealthStatus.ACTIVE, server_3_Url));
+
+        roundRobinService.startCheck();
     }
+
 }

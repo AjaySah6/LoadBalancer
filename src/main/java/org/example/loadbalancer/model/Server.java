@@ -18,4 +18,7 @@ public class Server extends BaseModel{
         this.healthStatus = healthStatus;
         this.serverUrl = serverUrl;
     }
+
+    public Server() {
+    }
 }
