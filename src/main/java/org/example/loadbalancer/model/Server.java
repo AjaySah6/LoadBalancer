@@ -2,11 +2,15 @@ package org.example.loadbalancer.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+
 @Entity
-@NoArgsConstructor
+@Getter
+@Setter
+
 public class Server extends BaseModel{
 
     private String serverName;
@@ -45,5 +49,7 @@ public class Server extends BaseModel{
 
     public void setHealthStatus(HealthStatus healthStatus) {
         this.healthStatus = healthStatus;
+    }
+    public Server() {
     }
 }

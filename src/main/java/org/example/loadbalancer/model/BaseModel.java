@@ -18,4 +18,13 @@ public class BaseModel {
     @CreatedDate
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date createdAt;
+
+
+    public BaseModel(int id, Date createdAt) {
+        this.id = id;
+        this.createdAt = createdAt;
+    }
+
+    public BaseModel() {
+    }
 }

@@ -2,39 +2,53 @@ package org.example.loadbalancer.service;
 
 import org.example.loadbalancer.exceptions.NoActiveServers;
 import org.example.loadbalancer.model.Server;
-import org.example.loadbalancer.repository.ServerRespository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.example.loadbalancer.repository.ServerRepository;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class RoundRobinService {
 
-    private int counter = -1;
-
-    @Autowired
-    private ServerRespository serverRespository;
-
-    @Autowired
+    private AtomicInteger counter = new AtomicInteger(0);
+    private ServerRepository serverRepository;
     private LoadBalancerService loadBalancerService;
 
-    public void startCheck() throws InterruptedException {
+    public RoundRobinService(ServerRepository serverRepository, LoadBalancerService loadBalancerService) {
+        this.serverRepository = serverRepository;
+        this.loadBalancerService = loadBalancerService;
+    }
 
-        List<Server> allServers = serverRespository.findAll();
+
+    public void startCheck() throws NoActiveServers {
+
+        List<Server> allServers = serverRepository.findAll();
+
         if(allServers.size() == 0){
-            throw new NoActiveServers("No active servers found");
+            System.err.println("ERROR: No servers configured. Background health check cannot start.");
+            return;
         }
-        while(true){
-            counter = (counter + 1)%allServers.size();
-            Server server = allServers.get(counter);
-            Boolean status = loadBalancerService.isServerUp(server.getServerUrl(), server);
 
-            if(status){
-            }else{
-                System.out.println(server.getServerName() + " is not up");
+        while(true){
+            try {
+
+                int currentIndex = counter.incrementAndGet() % allServers.size();
+
+                Server server = allServers.get(currentIndex);
+
+                boolean status = loadBalancerService.isServerUp(server.getServerUrl(), server);
+
+                if (status) {
+                    System.out.println(server.getServerName() + " is up and running.");
+                } else {
+                    System.out.println(server.getServerName() + " is not up.");
+                }
+
+            }catch(Exception e){
+                System.out.println("test");
             }
-            Thread.sleep(3000); // wait of 3 seconds
 
         }
     }

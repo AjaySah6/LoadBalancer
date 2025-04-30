@@ -25,7 +25,7 @@ public class LoadBalancerService {
             return response.getStatusCode().is2xxSuccessful();
 
         } catch (Exception e) {
-            serverLogRespository.save(new Log(server.getServerName() + " is running and active."));
+            System.out.println(server.getServerName() + " is down and not running.");
             throw new ServerIsDownException("Server is down, kindly check..");
         }
     }
