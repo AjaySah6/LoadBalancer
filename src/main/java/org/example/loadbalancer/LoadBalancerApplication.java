@@ -26,13 +26,13 @@ public class LoadBalancerApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        String server_1_Url = "http://localhost:8081";
+        String server_1_Url = "http://localhost:9090";
         serverRespository.save(new Server("Server_1", HealthStatus.ACTIVE, server_1_Url));
 
-        String server_2_Url = "http://localhost:8082";
+        String server_2_Url = "http://localhost:9091";
         serverRespository.save(new Server("Server_2", HealthStatus.ACTIVE, server_2_Url));
 
-        String server_3_Url = "http://localhost:8083";
+        String server_3_Url = "http://localhost:9092";
         serverRespository.save(new Server("Server_3", HealthStatus.ACTIVE, server_3_Url));
 
         roundRobinService.startCheck();
