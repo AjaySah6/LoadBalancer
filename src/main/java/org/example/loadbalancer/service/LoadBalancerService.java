@@ -20,7 +20,7 @@ public class LoadBalancerService {
 
     public boolean isServerUp(String serverUrl, Server server) {
         try {
-            ResponseEntity<String> response = restTemplate.getForEntity(serverUrl, String.class);
+            ResponseEntity<String> response = restTemplate.getForEntity(serverUrl, String.class); //
             serverLogRespository.save(new Log(server.getServerName() + " is running and active."));
             return response.getStatusCode().is2xxSuccessful();
 
@@ -30,4 +30,18 @@ public class LoadBalancerService {
         }
     }
 
+
+
 }
+
+/*
+
+RestTemplate → A Spring class to make HTTP calls (like a simple web browser or client).
+
+getForEntity(...) → Sends an HTTP GET request to serverUrl.
+
+String.class → Expects a response body of type String.
+
+ResponseEntity<String> → Wraps the full HTTP response (includes status, headers, and body).
+
+ */

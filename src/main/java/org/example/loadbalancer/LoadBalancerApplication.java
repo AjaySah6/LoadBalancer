@@ -35,7 +35,7 @@ public class LoadBalancerApplication implements CommandLineRunner {
         String server_3_Url = "http://localhost:9092/server/hello";
         serverRespository.save(new Server("Server_3", HealthStatus.ACTIVE, server_3_Url));
 
-        roundRobinService.startCheck();
+        roundRobinService.startHealthCheckLoop();
 
         System.out.println("LoadBalancerApplication run() method finished. Application started. ###");
     }

@@ -1,6 +1,7 @@
 package org.example.loadbalancer.service;
 
 import org.example.loadbalancer.exceptions.NoActiveServers;
+import org.example.loadbalancer.model.HealthStatus;
 import org.example.loadbalancer.model.Server;
 import org.example.loadbalancer.repository.ServerRepository;
 import org.springframework.scheduling.annotation.Async;
@@ -22,7 +23,7 @@ public class RoundRobinService {
     }
 
 
-    public void startCheck() throws NoActiveServers {
+    public void startHealthCheckLoop() throws NoActiveServers {
 
         List<Server> allServers = serverRepository.findAll();
 
@@ -32,24 +33,24 @@ public class RoundRobinService {
         }
 
         while(true){
+            int currentIndex = counter.incrementAndGet() % allServers.size();
+
+            Server server = allServers.get(currentIndex);
+
             try {
-
-                int currentIndex = counter.incrementAndGet() % allServers.size();
-
-                Server server = allServers.get(currentIndex);
-
-                boolean status = loadBalancerService.isServerUp(server.getServerUrl(), server);
-
-                if (status) {
-                    System.out.println(server.getServerName() + " is up and running.");
-                } else {
-                    System.out.println(server.getServerName() + " is not up.");
+                if(server.getHealthStatus().equals(HealthStatus.ACTIVE)){
+                    boolean status = loadBalancerService.isServerUp(server.getServerUrl(), server);
+                    if (status) {
+                        System.out.println(server.getServerName() + " is up and running.");
+                    } else {
+                        throw new NoActiveServers(server.getServerName() + " is not up and running");
+                    }
                 }
+                Thread.sleep(50000);
 
             }catch(Exception e){
-                System.out.println("test");
+                System.out.println(server.getServerName() + " is not running. Reason: " + e.getMessage() );
             }
-
         }
     }
 }
